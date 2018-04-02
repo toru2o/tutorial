@@ -751,6 +751,8 @@ func main() {
 	cat()
 	cat2()
 
+	fmt.Println("git Rosalind02")
+
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
 }
