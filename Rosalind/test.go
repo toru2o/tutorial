@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math/big"
+	// "math/big"
 	"os"
 )
 
@@ -110,46 +110,29 @@ func combinate(ss []string, m int) [][]string {
 	return seq
 }
 
+type LH struct {
+	lo int
+	hi int
+}
+
 func main() {
-	// u, err := url.Parse("http://www.uniprot.org/uniprot/B5ZC00.fasta")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Printf("URL: %s\n", u.String())
-	// fmt.Printf("Scheme: %s\n", u.Scheme)
-	// fmt.Printf("Opaque: %s\n", u.Opaque)
-	// fmt.Printf("User: %s\n", u.User)
-	// fmt.Printf("Host: %s\n", u.Host)
-	// fmt.Printf("Path: %s\n", u.Path)
-	// fmt.Printf("RawPath: %s\n", u.RawPath)
-	// fmt.Printf("RawQuery: %s\n", u.RawQuery)
-	// fmt.Printf("Fragment: %s\n", u.Fragment)
-
-	// for key, values := range u.Query() {
-	// 	fmt.Printf("Query Key: %s\n", key)
-	// 	for i, v := range values {
-	// 		fmt.Printf("Query Value[%d]: %s\n", i, v)
-	// 	}
-	// }
-
-	// url := "http://www.uniprot.org/uniprot/B5ZC00.fasta"
-	// res, err := http.Get(url)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer res.Body.Close()
-	// body, err := ioutil.ReadAll(res.Body)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// buf := bytes.NewBuffer(body)
-	// html := buf.String()
-	// fmt.Println(html)
-
-	x := big.NewInt(2)
-	fmt.Println(x)
-	fmt.Println("Git test02")
-
-	fmt.Println("Git test03")
+	memo := make(map[string]int)
+	memo["ab"] = 1
+	memo["cd"] = 2
+	_, ok := memo["ab"]
+	if ok {
+		fmt.Println(memo["ab"])
+	}
+	if _, ok := memo["cd"]; ok {
+		fmt.Println(memo["cd"])
+	}
+	if v, ok := memo["cd"]; ok {
+		fmt.Println(v)
+	}
+	if v, ok := memo["ef"]; ok {
+		fmt.Println(v)
+	} else {
+		fmt.Println("not exists")
+	}
 
 }

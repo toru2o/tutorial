@@ -731,33 +731,74 @@ func cat2() {
 	lines := getIdData(fname)
 	ss := lines[1]
 	fmt.Println(ss)
-	n := len(ss) / 2
-	c := make([]*big.Int, n+1) //この状態ではnilで初期化されている
-	zero := big.NewInt(0)
-	for i := 0; i <= n; i++ {
-		c[i] = zero
-	}
-	one := big.NewInt(1)
-	c[0], c[1] = one, one
-	mil := big.NewInt(1000000)
-	for i := 2; i <= n; i++ {
-		for j := 1; j <= i; j++ {
-			t := new(big.Int).Mul(c[j-1], c[i-j])
-			// fmt.Println(reflect.TypeOf(t))
-			// fmt.Println(t)
-			c[i] = new(big.Int).Add(c[i], t)
-			// c[i] = c[i] % 1000000
-			// n2 := big.NewInt(int64(i))
-			// z := new(big.Int).Mod(x,y *Int)
-		}
-		// c[i] = new(big.Int).Mod(c[i], mil)
-		// fmt.Print("c[i]= ")
-		// fmt.Println(c[i])
-	}
-	c[n] = new(big.Int).Mod(c[n], mil)
-	fmt.Println(c[n])
-	fwriteLine(output, fmt.Sprint(c[n]))
 
+	count := func(S string) (int, int, int, int) {
+		ctA, ctU, ctC, ctG := 0, 0, 0, 0
+		for i := 0; i < len(S); i++ {
+			switch S[i] {
+			case 'A':
+				ctA++
+			case 'U':
+				ctU++
+			case 'C':
+				ctC++
+			case 'G':
+				ctG++
+			}
+		}
+		return ctA, ctU, ctC, ctG
+	}
+
+	is_complement := func(a, b byte) bool {
+		bl := false
+		switch a {
+		case 'A':
+			if b == 'U' {
+				bl = true
+			}
+		case 'U':
+			if b == 'A' {
+				bl = true
+			}
+		case 'C':
+			if b == 'G' {
+				bl = true
+			}
+		case 'G':
+			if b == 'C' {
+				bl = true
+			}
+		}
+		return bl
+	}
+
+	memo := make(map[string]int) //{} dictionary to memoize solutions in
+	memo[""] = 1                 //empty string is already a perfect matching
+	var find_noncrossmatch func(string) int
+	find_noncrossmatch = func(S string) int {
+		if v, ok := memo[S]; ok {
+			return v // returns memoized solution if one exists
+		}
+		ctA, ctU, ctC, ctG := count(S)
+		if ctA != ctU || ctC != ctG {
+			memo[S] = 0
+			return 0 // no perfect matching exists if the number of complementary bases is not equal
+		}
+		result := 0
+		for i := 1; i < len(S); i++ {
+			if is_complement(S[0], S[i]) { // look for all posible edges from the first base
+				// iteratively compute how many ways can we make a matching with one edge fixed
+				result += find_noncrossmatch(S[1:i]) * find_noncrossmatch(S[i+1:])
+			}
+		}
+		result = result % 1000000
+		memo[S] = result // memoize solution
+		return result
+	}
+
+	ans := find_noncrossmatch(ss)
+	fmt.Println(ans)
+	fwriteLine(output, fmt.Sprint(ans))
 }
 
 func main() {
@@ -771,7 +812,7 @@ func main() {
 	//tran()
 	//tree()
 	cat()
-	// cat2()
+	//cat2()
 
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
