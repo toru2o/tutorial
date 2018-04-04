@@ -664,42 +664,64 @@ func tree() {
 
 }
 
-func cat() {
-	fname := "C:/Users/OGURA/go/practice/data/rosalind_cat0.txt"
-	// output := "C:/Users/OGURA/go/practice/output.txt"
-	lines := getIdData(fname)
-	fmt.Println(lines)
-	ss := lines[1]
-	n := len(ss) / 2
-	c := make([][]int, n+1)
-	fmt.Println(c)
+type LH struct {
+	lo int
+	hi int
+}
 
-	pair := map[byte]byte{
+func calcMatching(rna string, lo, hi int, dp map[LH]int) int {
+	mapping := map[byte]byte{
 		'A': 'U',
 		'U': 'A',
 		'C': 'G',
 		'G': 'C',
 	}
-	fmt.Println(pair)
-	// c[0], c[1] = 1, 1
-	//ss[i]までの文字列がbasepairを形成できないならば(A U, C Gが同数でなならば）continue
-	for i := 2; i <= n; i++ {
-		c[i][0] = 1
-		if pair[ss[0]] == ss[1] {
-			c[i][1] = 1
-		} else {
-			c[i][1] = 0
-		}
-		for j := 1; j <= i; j++ {
-			if pair[ss[0]] != ss[2*j-1] {
-				continue
-			}
-			c[i][j] += c[i][j-1] * c[i][i-j]
-		}
-		// 	c[i] = c[i] % 1000000
+
+	characters := hi - lo + 1
+
+	// if there are an odd number of nucleotides,
+	// this is an invalid matching.
+	if characters%2 == 1 {
+		return 0
 	}
-	// fmt.Println(c[n])
-	// fwriteLine(output, fmt.Sprint(c[n]))
+	// handles tricky edge cases.
+	if lo >= hi || lo >= len(rna) || hi < 0 {
+		return 1
+	}
+	// return answer if it is memoized.
+	lh := LH{lo, hi}
+	_, ok := dp[lh]
+	//計算済みの場合は辞書化した値を返す
+	if ok {
+		return dp[lh]
+	} else {
+		curr := rna[lo]
+		target := mapping[curr]
+		acc := 0
+		for i := lo + 1; i <= hi; i += 2 {
+			// print("lo= %d, i= %d" %(lo, i))
+			if rna[i] == target {
+				left := calcMatching(rna, lo+1, i-1, dp)
+				right := calcMatching(rna, i+1, hi, dp)
+				acc += (left * right) % 1000000
+			}
+		}
+		dp[lh] = acc
+		return acc
+	}
+}
+
+func cat() {
+	fname := "C:/Users/OGURA/go/practice/data/rosalind_cat.txt"
+	output := "C:/Users/OGURA/go/practice/output.txt"
+	lines := getIdData(fname)
+	fmt.Println(lines)
+	ss := lines[1]
+	dp := make(map[LH]int)
+	ans := calcMatching(ss, 0, len(ss)-1, dp)
+	ans = ans % 1000000
+	fmt.Println(ans)
+	fwriteLine(output, fmt.Sprint(ans))
 
 }
 
@@ -749,9 +771,7 @@ func main() {
 	//tran()
 	//tree()
 	cat()
-	cat2()
-
-	fmt.Println("git Rosalind02")
+	// cat2()
 
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
