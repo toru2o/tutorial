@@ -801,6 +801,90 @@ func cat2() {
 	fwriteLine(output, fmt.Sprint(ans))
 }
 
+//stringがreverse complementも含め２回以上あるかどうかチェック
+func corr() {
+	fname := "C:/Users/OGURA/go/practice/data/rosalind_corr.txt"
+	output := "C:/Users/OGURA/go/practice/output.txt"
+	lines := getIdData(fname)
+	fmt.Println(lines)
+	n := len(lines) / 2
+
+	compl := map[byte]string{
+		'A': "T",
+		'T': "A",
+		'C': "G",
+		'G': "C",
+	}
+
+	read1 := make([]string, n)
+	read2 := make([]string, n)
+	m := len(lines[1])
+	for i := 0; i < n; i++ {
+		read1[i] = lines[2*i+1]
+		for j := 0; j < m; j++ {
+			read2[i] += compl[read1[i][m-1-j]]
+		}
+		// fmt.Println(read2[i])
+	}
+	correct := make([]int, n)
+	for i := 0; i < n; i++ {
+		if correct[i] >= 1 {
+			continue
+		}
+		for j := i + 1; j < n; j++ {
+			if correct[j] >= 1 {
+				continue
+			}
+			if read1[i] == read1[j] || read1[i] == read2[j] {
+				correct[i] += 1
+				correct[j] += 1
+			}
+		}
+	}
+	fmt.Println(correct)
+
+	ans := []string{}
+	for i := 0; i < n; i++ {
+		if correct[i] > 0 {
+			continue
+		}
+		for j := 0; j < n; j++ {
+			if j == i || correct[j] == 0 {
+				continue
+			}
+			ct := 0
+			for k := 0; k < m; k++ {
+				if ct > 1 {
+					break
+				}
+				if read1[i][k] != read1[j][k] {
+					ct++
+				}
+			}
+			if ct == 1 {
+				ans = append(ans, read1[i]+"->"+read1[j])
+				break
+			}
+
+			ct = 0
+			for k := 0; k < m; k++ {
+				if ct > 1 {
+					break
+				}
+				if read1[i][k] != read2[j][k] {
+					ct++
+				}
+			}
+			if ct == 1 {
+				ans = append(ans, read1[i]+"->"+read2[j])
+				break
+			}
+		}
+	}
+	fmt.Println(ans)
+	fwriteLines(output, ans)
+}
+
 func main() {
 	time1 := time.Now()
 	//long()
@@ -811,8 +895,9 @@ func main() {
 	//sseq()
 	//tran()
 	//tree()
-	cat()
-	//cat2()
+	//cat()
+	//cat2() //こちらがbetter
+	corr()
 
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
