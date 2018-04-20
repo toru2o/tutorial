@@ -569,13 +569,18 @@ func kmp() {
 	fwriteLine(output, ans)
 }
 
+func test() {
+	fmt.Println("test")
+}
+
 func main() {
 	time1 := time.Now()
 	//corr()
 	//inod()
 	//kmer()
-	kmp()
-
+	//kmp()
+	test()
+	
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
 }
