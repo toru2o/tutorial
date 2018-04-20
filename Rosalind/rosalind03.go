@@ -1,6 +1,24 @@
 /*
 
-start codon = ATG
+func isConnected(adjacent [][]int, start, goal int) bool
+func convStoI(s string) int
+func freadLines(fname string) []string
+func getIdData(fname string) []string
+func fwriteLine(fname string, line string)
+func fwriteLines(fname string, lines []string)
+func MapString(f func(string) string, vs []string) []string
+func combi(ss []int, m int) [][]int
+func combinate(ss []string, m int) [][]string
+// 文字列（スライスに格納）から重複を許してm個を取り出して並べる順列を出力
+func permutateDup(ss []string, m int) [][]string
+// 文字列（スライスに格納）からm個を取り出して並べる順列を出力
+func permutateStr(ss []string, m int) [][]string
+// 整数列の順列をスライスで出力
+func permutation(n, m int) [][]int
+func getBody(url string) string
+// DNA codon table
+func makeDNAcodon() map[string]string
+func DNAtoProtein(DNA string) string
 
 */
 package main
@@ -191,7 +209,7 @@ func combinate(ss []string, m int) [][]string {
 }
 
 // 文字列（スライスに格納）から重複を許してm個を取り出して並べる順列を出力
-func permuteDup(ss []string, m int) [][]string {
+func permutateDup(ss []string, m int) [][]string {
 	seq := [][]string{}
 
 	var permSub func(xs []string)
@@ -451,10 +469,112 @@ func inod() {
 
 }
 
+func kmer() {
+	fname := "C:/Users/OGURA/go/practice/data/rosalind_kmer.txt"
+	output := "C:/Users/OGURA/go/practice/output.txt"
+	lines := getIdData(fname)
+	fmt.Println(lines)
+
+	ss := []string{"A", "C", "G", "T"}
+	lt := permutateDup(ss, 4)
+	// fmt.Println(lt)
+
+	kmer := make(map[string]int)
+	for i := 0; i < len(lt); i++ {
+		s := strings.Join(lt[i], "")
+		kmer[s] = 0
+	}
+	// fmt.Println(kmer)
+
+	for i := 0; i < len(lines[1])-3; i++ {
+		// fmt.Println(lines[1][i : i+4])
+		s := lines[1][i : i+4]
+		kmer[s] += 1
+	}
+	ans := ""
+	for _, v := range lt {
+		s := strings.Join(v, "")
+		ans += fmt.Sprint(kmer[s]) + " "
+	}
+	fmt.Println(ans)
+	fwriteLine(output, ans)
+
+}
+
+func kmp0() {
+	fname := "C:/Users/OGURA/go/practice/data/rosalind_kmp.txt"
+	output := "C:/Users/OGURA/go/practice/output.txt"
+	lines := getIdData(fname)
+	fmt.Println(lines)
+	ss := lines[1]
+	P := make([]int, len(ss))
+
+	for i := 1; i < len(ss); i++ {
+		for j := i; j > 0; j-- {
+			// fmt.Printf("%s, %s\n", ss[i-j+1:i+1], ss[:j])
+			if ss[i-j+1:i+1] == ss[:j] {
+				P[i] = j
+				break
+			}
+		}
+	}
+	// fmt.Println(P)
+	ans := fmt.Sprint(P[0])
+	for i := 1; i < len(P); i++ {
+		ans += " " + fmt.Sprint(P[i])
+	}
+	fmt.Println(ans)
+	fwriteLine(output, ans)
+}
+
+func kmp() {
+	fname := "C:/Users/OGURA/go/practice/data/rosalind_kmp.txt"
+	output := "C:/Users/OGURA/go/practice/output.txt"
+	lines := getIdData(fname)
+	// fmt.Println(lines)
+	ss := lines[1]
+	T := make([]int, len(ss))
+
+	for i := 1; i < len(ss); i++ {
+		for j := 0; i+j < len(ss); j++ {
+			if ss[i+j] != ss[j] {
+				T[i] = j
+				break
+			}
+		}
+
+	}
+	// fmt.Println(T)
+
+	P := make([]int, len(ss))
+	for i := 1; i < len(T); i++ {
+		if T[i] == 0 {
+			continue
+		}
+
+		for j := T[i]; j > 0; j-- {
+			if T[i] > P[i+j-1] {
+				P[i+j-1] = T[i]
+			}
+			T[i]--
+		}
+	}
+	// fmt.Print(P)
+
+	ans := fmt.Sprint(P[0])
+	for i := 1; i < len(P); i++ {
+		ans += " " + fmt.Sprint(P[i])
+	}
+	fmt.Println(ans)
+	fwriteLine(output, ans)
+}
+
 func main() {
 	time1 := time.Now()
 	//corr()
-	inod()
+	//inod()
+	//kmer()
+	kmp()
 
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
