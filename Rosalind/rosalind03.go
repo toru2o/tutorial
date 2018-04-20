@@ -570,7 +570,8 @@ func kmp() {
 }
 
 func test() {
-	fmt.Println("test")
+	fmt.Println("revise test")
+	fmt.Println("add")
 }
 
 func main() {
@@ -580,7 +581,7 @@ func main() {
 	//kmer()
 	//kmp()
 	test()
-	
+
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
 }
