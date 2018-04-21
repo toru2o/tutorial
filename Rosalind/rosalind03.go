@@ -569,6 +569,60 @@ func kmp() {
 	fwriteLine(output, ans)
 }
 
+func lcsq() {
+	fname := "C:/Users/OGURA/go/practice/data/rosalind_lcsq0.txt"
+	// output := "C:/Users/OGURA/go/practice/output.txt"
+	lines := getIdData(fname)
+	// fmt.Println(lines)
+
+	var print_lcs func(string, string, [][]int, int, int)
+	print_lcs = func(a, b string, lcs [][]int, i, j int) {
+		if i == 0 || j == 0 {
+			fmt.Println("return") //return
+		} else {
+			if a[i-1] == b[j-1] {
+				print_lcs(a, b, lcs, i-1, j-1)
+				fmt.Print(string(a[i-1]))
+			} else {
+				if lcs[i-1][j] >= lcs[i][j-1] {
+					print_lcs(a, b, lcs, i-1, j)
+				} else {
+					print_lcs(a, b, lcs, i, j-1)
+				}
+			}
+		}
+	}
+
+	a := lines[1]
+	b := lines[3]
+	fmt.Println(a)
+	fmt.Println(b)
+	lcs := make([][]int, len(a)+1)
+	for i := 0; i < len(a)+1; i++ {
+		lcs[i] = make([]int, len(b)+1)
+	}
+	fmt.Println(lcs)
+
+	for i := 1; i <= len(a); i++ {
+		for j := 1; j <= len(b); j++ {
+			x := 0
+			if a[i-1] == b[j-1] {
+				x = 1
+			}
+			lcs[i][j] = lcs[i-1][j-1] + x
+			if lcs[i-1][j] > lcs[i][j] {
+				lcs[i][j] = lcs[i-1][j]
+			}
+			if lcs[i][j-1] > lcs[i][j] {
+				lcs[i][j] = lcs[i][j-1]
+			}
+		}
+	}
+	print_lcs(a, b, lcs, len(a), len(b))
+	fmt.Println("")
+
+}
+
 func test() {
 	fmt.Println("revise test")
 	fmt.Println("add")
@@ -580,7 +634,8 @@ func main() {
 	//inod()
 	//kmer()
 	//kmp()
-	test()
+	//test()
+	lcsq()
 
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
