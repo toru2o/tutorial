@@ -571,27 +571,47 @@ func kmp() {
 
 func lcsq() {
 	fname := "C:/Users/OGURA/go/practice/data/rosalind_lcsq0.txt"
-	// output := "C:/Users/OGURA/go/practice/output.txt"
+	output := "C:/Users/OGURA/go/practice/output.txt"
 	lines := getIdData(fname)
 	// fmt.Println(lines)
 
-	var print_lcs func(string, string, [][]int, int, int)
-	print_lcs = func(a, b string, lcs [][]int, i, j int) {
+	//ans := ""
+	var dp func(string, string, string, [][]int, int, int) string
+	dp = func(a, b, ans string, lcs [][]int, i, j int) string {
 		if i == 0 || j == 0 {
-			fmt.Println("return") //return
+			return ans
+		} //else {
+		if a[i-1] == b[j-1] {
+			ans = string(a[i-1]) + ans //前に追記
+			return dp(a, b, ans, lcs, i-1, j-1)
+			// fmt.Print(string(a[i-1]))
 		} else {
-			if a[i-1] == b[j-1] {
-				print_lcs(a, b, lcs, i-1, j-1)
-				fmt.Print(string(a[i-1]))
+			if lcs[i-1][j] >= lcs[i][j-1] {
+				return dp(a, b, ans, lcs, i-1, j)
 			} else {
-				if lcs[i-1][j] >= lcs[i][j-1] {
-					print_lcs(a, b, lcs, i-1, j)
-				} else {
-					print_lcs(a, b, lcs, i, j-1)
-				}
+				return dp(a, b, ans, lcs, i, j-1)
 			}
 		}
+		//}
 	}
+
+	// var print_lcs func(string, string, [][]int, int, int)
+	// print_lcs = func(a, b string, lcs [][]int, i, j int) {
+	// 	if i == 0 || j == 0 {
+	// 		fmt.Println("return") //return
+	// 	} else {
+	// 		if a[i-1] == b[j-1] {
+	// 			print_lcs(a, b, lcs, i-1, j-1)
+	// 			fmt.Print(string(a[i-1]))
+	// 		} else {
+	// 			if lcs[i-1][j] >= lcs[i][j-1] {
+	// 				print_lcs(a, b, lcs, i-1, j)
+	// 			} else {
+	// 				print_lcs(a, b, lcs, i, j-1)
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	a := lines[1]
 	b := lines[3]
@@ -601,7 +621,7 @@ func lcsq() {
 	for i := 0; i < len(a)+1; i++ {
 		lcs[i] = make([]int, len(b)+1)
 	}
-	fmt.Println(lcs)
+	// fmt.Println(lcs)
 
 	for i := 1; i <= len(a); i++ {
 		for j := 1; j <= len(b); j++ {
@@ -618,9 +638,10 @@ func lcsq() {
 			}
 		}
 	}
-	print_lcs(a, b, lcs, len(a), len(b))
-	fmt.Println("")
-
+	ans := dp(a, b, "", lcs, len(a), len(b))
+	//fmt.Println("")
+	fmt.Println(ans)
+	fwriteLine(output, ans)
 }
 
 func test() {
