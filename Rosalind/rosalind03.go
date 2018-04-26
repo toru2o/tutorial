@@ -30,6 +30,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"rosTool"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -570,17 +572,16 @@ func kmp() {
 }
 
 func lcsq() {
-	fname := "C:/Users/OGURA/go/practice/data/rosalind_lcsq0.txt"
+	fname := "C:/Users/OGURA/go/practice/data/rosalind_lcsq.txt"
 	output := "C:/Users/OGURA/go/practice/output.txt"
 	lines := getIdData(fname)
 	// fmt.Println(lines)
 
-	//ans := ""
 	var dp func(string, string, string, [][]int, int, int) string
 	dp = func(a, b, ans string, lcs [][]int, i, j int) string {
 		if i == 0 || j == 0 {
 			return ans
-		} //else {
+		}
 		if a[i-1] == b[j-1] {
 			ans = string(a[i-1]) + ans //前に追記
 			return dp(a, b, ans, lcs, i-1, j-1)
@@ -592,7 +593,6 @@ func lcsq() {
 				return dp(a, b, ans, lcs, i, j-1)
 			}
 		}
-		//}
 	}
 
 	// var print_lcs func(string, string, [][]int, int, int)
@@ -644,6 +644,99 @@ func lcsq() {
 	fwriteLine(output, ans)
 }
 
+//次はABC順でのソートでなく、DNAの順でソートする例
+type AryS [][]string
+
+func (p AryS) Len() int {
+	return len(p)
+}
+
+func (p AryS) Less(i, j int) bool {
+	//p[i]はstring
+	bl := false
+	s1, s2 := p[i], p[j]
+	n := len(s1)
+	if len(s2) < len(s1) {
+		n = len(s2)
+	}
+	for k := 0; k < n; k++ {
+		loop := true
+		switch s1[k] {
+		case "D":
+			if s2[k] != "D" {
+				bl = true
+				loop = false
+			}
+		case "N":
+			if s2[k] == "A" {
+				bl = true
+				loop = false
+			} else if s2[k] == "D" {
+				loop = false
+			}
+		case "A":
+			if s2[k] != "A" {
+				loop = false
+			}
+		}
+		if !loop {
+			break
+		}
+		if k == n-1 {
+			if len(s1) < len(s2) {
+				bl = true
+			}
+		}
+	}
+	return bl
+}
+
+func (p AryS) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p AryS) SortDNA() {
+	sort.Sort(p)
+}
+
+func lexv() {
+	fname := "C:/Users/OGURA/go/practice/data/rosalind_lexv0.txt"
+	output := "C:/Users/OGURA/go/practice/output.txt"
+	lines := rosTool.FreadLines(fname)
+	// fmt.Println(lines)
+	n := rosTool.ConvStoI(lines[1])
+	lt := strings.Split(lines[0], " ")
+	fmt.Println(lt)
+
+	// 'a' = byte(97)
+	lex := make(map[byte]string)
+	for i := 0; i < n; i++ {
+		lex[byte(97+i)] = lt[i]
+	}
+
+	lt2 := make([]string, n)
+	for i := 0; i < n; i++ {
+		lt2[i] = string(byte(97 + i))
+	}
+	seq := rosTool.PermutateDup(lt2, n)
+	for i := n - 1; i > 0; i-- {
+		seq2 := rosTool.PermutateDup(lt, i)
+		seq = append(seq, seq2...)
+	}
+	sort.Strings(seq)
+	fmt.Println(seq)
+
+	// seq3 := AryS(seq)
+	// seq3.SortDNA()
+	// // fmt.Println(seq3)
+	// ans := make([]string, len(seq3))
+	// for i := 0; i < len(ans); i++ {
+	// 	ans[i] = strings.Join(seq3[i], "")
+	// }
+	// fmt.Println(ans)
+	// rosTool.FwriteLines(output, ans)
+}
+
 func test() {
 	fmt.Println("revise test")
 	fmt.Println("add")
@@ -656,7 +749,8 @@ func main() {
 	//kmer()
 	//kmp()
 	//test()
-	lcsq()
+	//lcsq()
+	lexv()
 
 	fmt.Println("elapsed ", time.Now().Sub(time1))
 	fmt.Println("End")
